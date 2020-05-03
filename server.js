@@ -3,7 +3,9 @@ const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 const morgan = require('morgan');
 const uuid = require('uuid');
+const mongoose = require('mongoose');
 const keyChecker = require('./middleware/keyChecker');
+const {Bookmarks} = require('./models/bookmarkModel');
 
 const app = express();
 
@@ -35,7 +37,16 @@ let listOfBookmarks = [
 ];
 
 app.get('/api/bookmarks', (req, res) => {
-    return res.status(200).json(listOfBookmarks);
+    Bookmarks
+        .getAllBookmarks()
+        .then(result => {
+            return res.status(200).json(result);
+        })
+        .catch(err => {
+            res.statusMessage = "Something is wrong with the Database. Try again later. " +
+                err.message;
+            return res.status(500).end();
+        });
 });
 
 app.get('/api/bookmark', (req, res) => {
@@ -46,21 +57,25 @@ app.get('/api/bookmark', (req, res) => {
         return res.status(406).end();
     }
 
-    let result = [];
-
-    listOfBookmarks.forEach(book => {
-       if(book.title === title) result.push(book);
-    });
-
-    if(result.length === 0){
-        res.statusMessage = "No title was found with parameter!";
-        return res.status(404).end();
-    }
-
-    return res.status(200).json(result);
+    Bookmarks
+        .getBookmarksByTitle(title)
+        .then(result => {
+            if(result.length === 0){
+                res.statusMessage = "No title was found with parameter!";
+                return res.status(404).end();
+            }
+            else return res.status(200).json(result);
+        })
+        .catch(err => {
+            res.statusMessage = "Something is wrong with the Database. Try again later. " +
+                err.message;
+            return res.status(500).end();
+        });
 });
 
 app.post('/api/bookmarks', jsonParser, ( req, res ) => {
+    console.log( "Body ", req.body );
+
     let title = req.body.title;
     let desc = req.body.description;
     let url = req.body.url;
@@ -71,7 +86,7 @@ app.post('/api/bookmarks', jsonParser, ( req, res ) => {
         return res.status(406).end();
     }
 
-    if(typeof(id) !== 'number'){
+    if(typeof(rating) !== 'number'){
         res.statusMessage = "The 'rating' MUST be a number!";
         return res.status(409).end();
     }
@@ -84,37 +99,41 @@ app.post('/api/bookmarks', jsonParser, ( req, res ) => {
         rating : rating
     };
 
-    listOfBookmarks.push(newBook);
-
-    return res.status(201).json(newBook);
+    Bookmarks
+        .createBookmark(newBook)
+        .then(result => {
+            return res.status(201).json(result);
+        })
+        .catch(err => {
+            res.statusMessage = "Something is wrong with the Database. Try again later. " +
+                err.message;
+            return res.status(500).end();
+        });
 });
 
 app.delete('/api/bookmark/:id', ( req, res ) => {
 
     let id = req.params.id;
 
-    let itemToRemove = listOfBookmarks.findIndex( (book) => {
-        if(book.id === id){
-            return true;
-        }
-    });
-
-    if(itemToRemove < 0){
-        res.statusMessage = "That 'id' was not found in the list of bookmarks.";
-        return res.status(404).end();
-    }
-
-    listOfBookmarks.splice( itemToRemove, 1 );
-    return res.status(200).end();
+    Bookmarks
+        .removeBookmark(id)
+        .then(result => {
+            if(result.deletedCount === 0){
+                res.statusMessage = "That 'id' was not found in the list of bookmarks.";
+                return res.status(404).end();
+            }
+            return res.status(200).json(result);
+        })
+        .catch(err => {
+            res.statusMessage = "Something is wrong with the Database. Try again later. " +
+                err.message;
+            return res.status(500).end();
+        });
 });
 
 app.patch('/api/bookmark/:id', jsonParser, ( req, res ) => {
     let id = req.params.id;
     let idB = req.body.id;
-    let title = req.body.title;
-    let desc = req.body.description;
-    let url = req.body.url;
-    let rating = req.body.rating;
 
     if(!idB){
         res.statusMessage = "The 'id' was not found in the body!";
@@ -126,21 +145,42 @@ app.patch('/api/bookmark/:id', jsonParser, ( req, res ) => {
         return res.status(409).end();
     }
 
-    let updateBook = listOfBookmarks.find((book) => {
-        if(book.id === id){
-            return book;
-        }
-    });
-
-    if(!title) updateBook.title = title;
-    if(!desc) updateBook.description = desc;
-    if(!url) updateBook.url = url;
-    if(!rating) updateBook.rating = rating;
-
-    return res.status(202).json(updateBook);
+    Bookmarks
+        .updateBookmark(id, req.body)
+        .then(result => {
+            if(result.n === 0){
+                res.statusMessage = "That 'id' was not found in the list of bookmarks.";
+                return res.status(404).end();
+            }
+            return res.status(202).json(result);
+        })
+        .catch(err => {
+            res.statusMessage = "Something is wrong with the Database. Try again later. " +
+                err.message;
+            return res.status(500).end();
+        });
 });
 
 app.listen(8080, () =>{
-    console.log("This server is running on port 8080")
+    console.log("This server is running on port 8080");
+
+    new Promise( (resolve, reject) =>{
+        const settings = {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            useCreateIndex: true
+        };
+        mongoose.connect('mongodb://localhost/bookmarksdb', settings, (err) =>{
+            if(err){
+                return reject(err);
+            }
+            else{
+                console.log("I have successfully connected with mongo!");
+                return resolve();
+            }
+        }).catch(err =>{
+            console.log(err);
+        });
+    });
 });
 
