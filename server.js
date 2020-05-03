@@ -36,7 +36,7 @@ let listOfBookmarks = [
     }
 ];
 
-app.get('/api/bookmarks', (req, res) => {
+app.get('/bookmarks', (req, res) => {
     Bookmarks
         .getAllBookmarks()
         .then(result => {
@@ -49,7 +49,7 @@ app.get('/api/bookmarks', (req, res) => {
         });
 });
 
-app.get('/api/bookmark', (req, res) => {
+app.get('/bookmark', (req, res) => {
     let title = req.query.title;
 
     if(!title){
@@ -73,7 +73,7 @@ app.get('/api/bookmark', (req, res) => {
         });
 });
 
-app.post('/api/bookmarks', jsonParser, ( req, res ) => {
+app.post('/bookmarks', jsonParser, ( req, res ) => {
     console.log( "Body ", req.body );
 
     let title = req.body.title;
@@ -111,7 +111,7 @@ app.post('/api/bookmarks', jsonParser, ( req, res ) => {
         });
 });
 
-app.delete('/api/bookmark/:id', ( req, res ) => {
+app.delete('/bookmark/:id', ( req, res ) => {
 
     let id = req.params.id;
 
@@ -131,7 +131,7 @@ app.delete('/api/bookmark/:id', ( req, res ) => {
         });
 });
 
-app.patch('/api/bookmark/:id', jsonParser, ( req, res ) => {
+app.patch('/bookmark/:id', jsonParser, ( req, res ) => {
     let id = req.params.id;
     let idB = req.body.id;
 
