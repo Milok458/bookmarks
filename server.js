@@ -171,7 +171,7 @@ app.listen(8080, () =>{
             useUnifiedTopology: true,
             useCreateIndex: true
         };
-        mongoose.connect('mongodb://localhost/bookmarksdb', settings, (err) =>{
+        mongoose.connect('mongodb+srv://user:pwd@cluster0-gxg74.mongodb.net/test?retryWrites=true&w=majority', settings, (err) =>{
             if(err){
                 return reject(err);
             }
