@@ -6,6 +6,7 @@ const uuid = require('uuid');
 const mongoose = require('mongoose');
 const keyChecker = require('./middleware/keyChecker');
 const {Bookmarks} = require('./models/bookmarkModel');
+const {DATABASE_URL, PORT} = require( './config' );
 
 const app = express();
 
@@ -162,26 +163,28 @@ app.patch('/bookmark/:id', jsonParser, ( req, res ) => {
         });
 });
 
-app.listen(8080, () =>{
-    console.log("This server is running on port 8080");
+app.listen( PORT, () => {
+    console.log( "This server is running on port 8080" );
 
-    new Promise( (resolve, reject) =>{
+    new Promise( ( resolve, reject ) => {
+
         const settings = {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useCreateIndex: true
         };
-        mongoose.connect('mongodb+srv://user:pwd@cluster0-gxg74.mongodb.net/test?retryWrites=true&w=majority', settings, (err) =>{
-            if(err){
-                return reject(err);
+        mongoose.connect( DATABASE_URL, settings, ( err ) => {
+            if( err ){
+                return reject( err );
             }
             else{
-                console.log("I have successfully connected with mongo!");
+                console.log( "Database connected successfully." );
                 return resolve();
             }
-        }).catch(err =>{
-            console.log(err);
+        })
+    })
+        .catch( err => {
+            console.log( err );
         });
-    });
 });
 
