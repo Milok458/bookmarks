@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <title>Bookmarks App</title>
+        <link href="./css/index.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+         <form class="add-form">
+             <h4>Add New Book</h4>
+             <label>Title for new book: <input type="text" id="bookTitleAdd" /></label>
+             <label>Description for new book: <input type="text" id="bookDescriptionAdd" /></label>
+             <label>Url for new book: <input type="text" id="bookUrlAdd" /></label>
+             <label>Rating for new book: <input type="text" id="bookRatingAdd" /></label>
+             <button type="submit">Submit</button>
+         </form>
+
+         <form class="delete-form">
+             <h4>Delete Book</h4>
+             <label>Type id of book to delete: <input type="text" id="bookIdDel" /></label>
+             <button type="submit">Submit</button>
+         </form>
+
+         <form class="update-form">
+             <h4>Update Book (Any empty input will not be updated)</h4>
+             <label>Type id of book to update: <input type="text" id="bookIdUp" /></label>
+             <label>Fill this input to update title: <input type="text" id="bookTitleUp" /></label>
+             <label>Fill this input to update description: <input type="text" id="bookDescriptionUp" /></label>
+             <label>Fill this input to update url: <input type="text" id="bookUrlUp" /></label>
+             <label>Fill this input to update rating: <input type="text" id="bookRatingUp" /></label>
+             <button type="submit">Submit</button>
+         </form>
+
+         <form class="get-form">
+             <h4>Get Book by Title</h4>
+             <label>Type title of desired book: <input type="text" id="bookTitleSrch" /></label>
+             <button type="submit">Submit</button>
+         </form>
+
+         <form class="get-all-form">
+             <h4>Get All Books</h4>
+             <label>Press this button to get all books in DB</label>
+             <button type="submit">Submit</button>
+         </form>
+
+         <h2>Query Results</h2>
+
+         <ul class="results">
+
+         </ul>
+
+        <script src="./js/index.js"></script>
+    </body>
+</html>

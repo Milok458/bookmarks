@@ -1,0 +1,26 @@
+.listItem{
+    border: 1px solid black;
+    width: 48%;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+form{
+    border: 1px solid black;
+    width: 48%;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+h4{
+    margin-top: 0;
+    padding: 0;
+}
+
+.results{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
